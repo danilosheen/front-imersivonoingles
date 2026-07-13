@@ -1,6 +1,7 @@
 import { Component, signal, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { LeadService } from '../../services/lead.service';
 
 @Component({
   selector: 'app-lead-capture',
@@ -10,6 +11,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 })
 export class LeadCapture implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
+  private readonly leadService = inject(LeadService);
 
   // Modal and Interactive states
   protected readonly isContactModalOpen = signal(false);
@@ -239,17 +241,30 @@ export class LeadCapture implements OnInit, OnDestroy {
 
     this.isSubmittingEmail.set(true);
 
-    setTimeout(() => {
-      const { name, email, phone } = this.emailForm.value;
-      localStorage.setItem('capturedLeadSpreadsheet', JSON.stringify({ name, email, phone }));
+    const { name, email, phone } = this.emailForm.value;
 
-      this.isSubmittingEmail.set(false);
-      this.submitEmailSuccess.set(true);
+    this.leadService.sendLead({ name, email, phone, type: 'email' }).subscribe({
+      next: () => {
+        localStorage.setItem('capturedLeadSpreadsheet', JSON.stringify({ name, email, phone }));
+        this.isSubmittingEmail.set(false);
+        this.submitEmailSuccess.set(true);
 
-      setTimeout(() => {
-        window.location.href = 'https://pay.kiwify.com.br/Hn4ldrV';
-      }, 800);
-    }, 1200);
+        setTimeout(() => {
+          window.location.href = 'https://pay.kiwify.com.br/Hn4ldrV';
+        }, 800);
+      },
+      error: (err) => {
+        console.error('Error saving lead to database:', err);
+        // Fallback: continue user flow anyway
+        localStorage.setItem('capturedLeadSpreadsheet', JSON.stringify({ name, email, phone }));
+        this.isSubmittingEmail.set(false);
+        this.submitEmailSuccess.set(true);
+
+        setTimeout(() => {
+          window.location.href = 'https://pay.kiwify.com.br/Hn4ldrV';
+        }, 800);
+      }
+    });
   }
 
   onSubmitWhatsapp() {
@@ -260,23 +275,36 @@ export class LeadCapture implements OnInit, OnDestroy {
 
     this.isSubmittingWhatsapp.set(true);
 
-    setTimeout(() => {
-      const { name, whatsapp } = this.whatsappForm.value;
-      localStorage.setItem('capturedLeadWhatsapp', JSON.stringify({ name, whatsapp }));
+    const { name, whatsapp } = this.whatsappForm.value;
 
-      this.isSubmittingWhatsapp.set(false);
-      this.submitWhatsappSuccess.set(true);
+    this.leadService.sendLead({ name, phone: whatsapp, type: 'whatsapp' }).subscribe({
+      next: () => {
+        localStorage.setItem('capturedLeadWhatsapp', JSON.stringify({ name, whatsapp }));
+        this.isSubmittingWhatsapp.set(false);
+        this.submitWhatsappSuccess.set(true);
 
-      setTimeout(() => {
-        this.closeContactModal();
-        this.submitWhatsappSuccess.set(false);
+        setTimeout(() => {
+          this.closeContactModal();
+          this.submitWhatsappSuccess.set(false);
+          const message = `Olá, professora Taissa! Me chamo ${name}, gostaria de agendar uma aula de inglês e tirar algumas dúvidas.`;
+          window.location.href = `https://wa.me/+553799431598?text=${encodeURIComponent(message)}`;
+        }, 1000);
+      },
+      error: (err) => {
+        console.error('Error saving lead to database:', err);
+        // Fallback: continue user flow anyway
+        localStorage.setItem('capturedLeadWhatsapp', JSON.stringify({ name, whatsapp }));
+        this.isSubmittingWhatsapp.set(false);
+        this.submitWhatsappSuccess.set(true);
 
-        // Redirect to WhatsApp with pre-defined message
-        const message = `Olá, professora Taissa! Me chamo ${name}, gostaria de agendar uma aula de inglês e tirar algumas dúvidas.`;
-        const phone = `+55${whatsapp.replace(/\D/g, '')}`;
-        window.location.href = `https://wa.me/+553799431598?text=${encodeURIComponent(message)}`;
-      }, 1000);
-    }, 1200);
+        setTimeout(() => {
+          this.closeContactModal();
+          this.submitWhatsappSuccess.set(false);
+          const message = `Olá, professora Taissa! Me chamo ${name}, gostaria de agendar uma aula de inglês e tirar algumas dúvidas.`;
+          window.location.href = `https://wa.me/+553799431598?text=${encodeURIComponent(message)}`;
+        }, 1000);
+      }
+    });
   }
 }
 
