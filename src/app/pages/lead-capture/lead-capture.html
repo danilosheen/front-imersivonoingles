@@ -1,0 +1,401 @@
+<div class="landing-container">
+
+  <!-- ======================================================
+       HEADER FIXO (Sticky Header)
+  ====================================================== -->
+  <header class="sticky-header">
+    <div class="header-inner">
+      <div class="brand">
+        <img src="assets/logo.jpg" alt="Logo imersivonoinglês" class="brand-icon">
+        <span class="brand-text">imersivo<span class="brand-accent">noinglês</span></span>
+      </div>
+      <div class="header-info">
+        <span class="header-text">Quer saber mais? Fale com a <span class="header-highlight">professora</span>.</span>
+        <button (click)="openContactModal($event)" class="header-btn">
+          <span class="material-symbols-outlined btn-icon">chat</span>
+          Conversar
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================================================
+       SEÇÃO 1 – CAPTURA DE E-MAIL
+  ====================================================== -->
+  <section class="email-capture-section">
+    <div class="section-container hero-grid">
+      <div class="hero-text-col">
+        <h1 class="hero-title">
+          Receba gratuitamente a planilha.
+        </h1>
+        <p class="hero-subtitle">
+          Acompanhe toda a sua evolução no inglês e estude de forma organizada.
+        </p>
+
+        <!-- Form Card -->
+        <div class="email-form-card">
+          <form [formGroup]="emailForm" (ngSubmit)="onSubmitEmail()" novalidate>
+            <!-- Nome -->
+            <div class="input-group" [class.error]="ef['name'].touched && ef['name'].invalid">
+              <div class="input-wrapper">
+                <span class="material-symbols-outlined input-icon">person</span>
+                <input type="text" id="name" formControlName="name" placeholder="Seu nome..."
+                  [disabled]="isSubmittingEmail() || submitEmailSuccess()">
+              </div>
+              @if (ef['name'].touched && ef['name'].invalid) {
+              <span class="error-msg">O nome é obrigatório (mínimo 3 caracteres).</span>
+              }
+            </div>
+
+            <!-- E-mail -->
+            <div class="input-group" [class.error]="ef['email'].touched && ef['email'].invalid">
+              <div class="input-wrapper">
+                <span class="material-symbols-outlined input-icon">mail</span>
+                <input type="email" id="email" formControlName="email" placeholder="Digite seu melhor e-mail..."
+                  [disabled]="isSubmittingEmail() || submitEmailSuccess()">
+              </div>
+              @if (ef['email'].touched && ef['email'].invalid) {
+              <span class="error-msg">Digite um e-mail válido.</span>
+              }
+            </div>
+
+            <!-- Telefone -->
+            <div class="input-group" [class.error]="ef['phone'].touched && ef['phone'].invalid">
+              <div class="input-wrapper">
+                <span class="material-symbols-outlined input-icon">phone</span>
+                <input type="text" id="phone" formControlName="phone" placeholder="Seu telefone..."
+                  (input)="onPhoneInput($event)" [disabled]="isSubmittingEmail() || submitEmailSuccess()">
+              </div>
+              @if (ef['phone'].touched && ef['phone'].invalid) {
+              <span class="error-msg">Telefone obrigatório (formato válido).</span>
+              }
+            </div>
+
+            <button type="submit" class="glow-btn submit-btn"
+              [disabled]="emailForm.invalid || isSubmittingEmail() || submitEmailSuccess()">
+              @if (isSubmittingEmail()) {
+              <span class="spinner"></span>
+              <span>Processando...</span>
+              } @else if (submitEmailSuccess()) {
+              <span class="material-symbols-outlined success-icon">check_circle</span>
+              <span>Acesso Liberado! Redirecionando...</span>
+              } @else {
+              <span>Acessar a Planilha</span>
+              @if (emailForm.invalid) {
+              <span class="material-symbols-outlined button-arrow">lock</span>
+              } @else {
+              <span class="material-symbols-outlined button-arrow">arrow_forward</span>
+              }
+              }
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="hero-visual-col">
+        <div class="visual-wrapper">
+          <div class="glow-backdrop"></div>
+          <div class="mockup-container">
+            <img src="assets/logo-planilha.jpeg" alt="Planilha de Estudos Inteligente" class="hero-mockup-img">
+            <!-- <div class="floating-badge">
+              <span class="material-symbols-outlined badge-star">grade</span>
+              <span>100% Gratuito</span>
+            </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       SEÇÃO 2 – CONHEÇA A PLANILHA
+  ====================================================== -->
+  <section class="spreadsheet-section">
+    <div class="section-container">
+      <h2 class="section-title text-dark">Conheça a Planilha</h2>
+
+      <div class="spreadsheet-grid">
+        <!-- Lado Esquerdo: Imagens e Funcionalidades (Carrossel Interativo) -->
+        <div class="spreadsheet-gallery-col">
+          <div class="gallery-card">
+            <div class="gallery-image-wrapper" (mousedown)="onDragStart($event)" (mouseup)="onDragEnd($event)"
+              (touchstart)="onDragStart($event)" (touchend)="onDragEnd($event)" style="cursor: grab;">
+              <button class="nav-arrow left" (click)="prevSpreadsheetImage(); $event.stopPropagation()"
+                aria-label="Anterior">
+                <span class="material-symbols-outlined">chevron_left</span>
+              </button>
+
+              @for (page of spreadsheetPages; track $index) {
+              <img [src]="page.image" [alt]="page.title" class="gallery-image"
+                [class.active]="activeSpreadsheetImageIndex() === $index" draggable="false"
+                (dragstart)="$event.preventDefault()">
+              }
+
+              <button class="nav-arrow right" (click)="nextSpreadsheetImage(); $event.stopPropagation()"
+                aria-label="Próximo">
+                <span class="material-symbols-outlined">chevron_right</span>
+              </button>
+            </div>
+            <div class="progress-bar-container">
+              @if (showProgressBar()) {
+              <div class="progress-bar-fill"></div>
+              }
+            </div>
+            <div class="gallery-content">
+              <h3>{{ spreadsheetPages[activeSpreadsheetImageIndex()].title }}</h3>
+              <p>{{ spreadsheetPages[activeSpreadsheetImageIndex()].description }}</p>
+            </div>
+            <div class="gallery-nav">
+              @for (page of spreadsheetPages; track $index) {
+              <button (click)="setSpreadsheetImage($index)" class="nav-dot"
+                [class.active]="activeSpreadsheetImageIndex() === $index" [title]="page.title">
+              </button>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Lado Direito: Texto de Recursos -->
+        <div class="spreadsheet-info-col">
+          <div class="features-card">
+            <h3 class="features-title">Com esta planilha de estudos de inglês, você consegue:</h3>
+            <ul class="features-list">
+              <li>
+                <span class="check-icon">✓</span>
+                <span class="feature-text"><strong>Registrar as palavras</strong> que você aprendeu para consolidar seu
+                  vocabulário em inglês.</span>
+              </li>
+              <li>
+                <span class="check-icon">✓</span>
+                <span class="feature-text"><strong>Identificar seu nível de inglês</strong> atual de forma prática e
+                  visual.</span>
+              </li>
+              <li>
+                <span class="check-icon">✓</span>
+                <span class="feature-text"><strong>Acompanhar sua evolução</strong> nos estudos através de gráficos de
+                  desempenho automáticos.</span>
+              </li>
+              <li>
+                <span class="check-icon">✓</span>
+                <span class="feature-text"><strong>Descobrir exatamente quanto falta</strong> para alcançar a sonhada
+                  fluência no inglês.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       SEÇÃO 3 – CONHEÇA A PROFESSORA
+  ====================================================== -->
+  <section class="teacher-section">
+    <div class="section-container teacher-grid">
+      <!-- Lado Esquerdo: Foto da professora em formato circular -->
+      <div class="teacher-image-col">
+        <div class="teacher-avatar-wrapper">
+          <div class="teacher-avatar-container">
+            <img src="assets/teacher.jpg" alt="Professora Taissa - Aulas Particulares de Inglês" class="teacher-photo">
+            <div class="avatar-ring"></div>
+          </div>
+          <a href="https://www.instagram.com/taissa_bc.teacher/" target="_blank" class="instagram-link"
+            title="Siga no Instagram">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="instagram-icon">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+            </svg>
+            <span>@taissa_bc.teacher</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Lado Direito: Textos de apresentação da professora -->
+      <div class="teacher-info-col">
+        <span class="teacher-label">CONHEÇA A PROFESORA</span>
+        <h2 class="teacher-name">Olá! Eu sou a professora Taissa.</h2>
+        <div class="teacher-bio">
+          <p>
+            Sou professora de inglês e poliglota, apaixonada por transformar o aprendizado do idioma em uma experiência
+            leve, prática e altamente eficiente para quem deseja aprender inglês rápido.
+          </p>
+          <p>
+            Depois de anos ensinando alunos com diferentes objetivos e dificuldades, desenvolvi o <strong>Método
+              Imersivo no Inglês</strong>, uma metodologia focada em resultados que une organização de estudos, prática
+            constante e contato real com o idioma para acelerar a evolução e tornar o seu curso de inglês
+            verdadeiramente transformador.
+          </p>
+          <p>
+            Acredito que estudar inglês vai muito além de decorar regras gramaticais chatas. Meu objetivo é ajudar você
+            a ganhar confiança para compreender, falar e viver o inglês de forma natural no seu dia a dia.
+          </p>
+        </div>
+        <button (click)="openContactModal($event)" class="teacher-btn-cta">
+          <span class="material-symbols-outlined">calendar_month</span>
+          Agendar minha aula com a professora
+        </button>
+      </div>
+    </div>
+  </section>
+  <!-- ======================================================
+       SEÇÃO 4 – PERGUNTAS FREQUENTES (FAQ)
+  ====================================================== -->
+  <section class="faq-section">
+    <div class="section-container">
+      <h2 class="section-title text-center text-light">Perguntas frequentes</h2>
+      <p class="section-subtitle text-center text-light-muted">Tire suas principais dúvidas sobre a planilha e as aulas.
+      </p>
+
+      <div class="faq-accordion">
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>A planilha para aprender inglês é realmente gratuita?</span>
+            <span class="material-symbols-outlined faq-arrow">expand_more</span>
+          </summary>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Sim! Basta preencher o formulário para baixar a planilha de estudos de inglês de forma 100% gratuita.
+              </p>
+            </div>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>A planilha de estudos de inglês funciona no celular?</span>
+            <span class="material-symbols-outlined faq-arrow">expand_more</span>
+          </summary>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Sim. Você pode acessar sua planilha tanto no celular quanto no computador para estudar inglês em
+                qualquer lugar.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>Como funciona o curso de inglês com aulas individuais?</span>
+            <span class="material-symbols-outlined faq-arrow">expand_more</span>
+          </summary>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Sim. As aulas de inglês particulares são 100% personalizadas de acordo com seus objetivos de carreira
+                ou viagem, seu nível atual e sua disponibilidade de horários.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>Preciso já saber alguma coisa para começar a estudar inglês?</span>
+            <span class="material-symbols-outlined faq-arrow">expand_more</span>
+          </summary>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Não. Tanto a planilha de estudos quanto o curso de inglês são indicados para todos os níveis, desde
+                iniciantes que querem aprender do zero até alunos avançados.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>Como posso agendar uma aula experimental de inglês?</span>
+            <span class="material-symbols-outlined faq-arrow">expand_more</span>
+          </summary>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>Basta clicar no botão "Agendar minha aula de inglês com a professora" nesta página para falar
+                diretamente com a professora Taissa no WhatsApp e marcar seu horário.</p>
+            </div>
+          </div>
+        </details>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======================================================
+       FOOTER
+  ====================================================== -->
+  <footer class="footer">
+    <div class="brand footer-brand">
+      <img src="assets/logo.jpg" alt="Logo imersivonoinglês" class="brand-icon">
+      <span class="brand-text">imersivo<span class="brand-accent">noinglês</span></span>
+    </div>
+    <p>© 2026 imersivonoinglês. Todos os direitos reservados.</p>
+    <p class="footer-sub">Transformando o aprendizado de inglês de forma prática e descomplicada.</p>
+  </footer>
+
+  <!-- ======================================================
+       MODAL DE CAPTURA DO WHATSAPP
+  ====================================================== -->
+  @if (isContactModalOpen()) {
+  <div class="modal-overlay" (click)="closeContactModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <button class="modal-close-btn" (click)="closeContactModal()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+
+      <h3 class="modal-title">Falar com a professora</h3>
+      <p class="modal-subtitle">Preencha os campos abaixo para entrar em contato com a professora Taissa pelo WhatsApp.
+      </p>
+
+      <form [formGroup]="whatsappForm" (ngSubmit)="onSubmitWhatsapp()" novalidate>
+        <!-- Nome -->
+        <div class="modal-input-group" [class.error]="wf['name'].touched && wf['name'].invalid">
+          <label for="modal-name">Nome (obrigatório)</label>
+          <div class="modal-input-wrapper">
+            <span class="material-symbols-outlined modal-input-icon">person</span>
+            <input type="text" id="modal-name" formControlName="name" placeholder="Seu nome"
+              [disabled]="isSubmittingWhatsapp() || submitWhatsappSuccess()">
+          </div>
+          @if (wf['name'].touched && wf['name'].invalid) {
+          <span class="error-msg">
+            @if (wf['name'].errors?.['required']) { O nome é obrigatório. }
+            @if (wf['name'].errors?.['minlength']) { Digite pelo menos 3 caracteres. }
+          </span>
+          }
+        </div>
+
+        <!-- WhatsApp -->
+        <div class="modal-input-group" [class.error]="wf['whatsapp'].touched && wf['whatsapp'].invalid">
+          <label for="modal-whatsapp">WhatsApp (obrigatório)</label>
+          <div class="modal-input-wrapper">
+            <span class="material-symbols-outlined modal-input-icon">phone</span>
+            <input type="text" id="modal-whatsapp" formControlName="whatsapp" placeholder="Ex: (11) 99999-9999"
+              (input)="onWhatsappInput($event)" [disabled]="isSubmittingWhatsapp() || submitWhatsappSuccess()">
+          </div>
+          @if (wf['whatsapp'].touched && wf['whatsapp'].invalid) {
+          <span class="error-msg">WhatsApp obrigatório (formato válido).</span>
+          }
+        </div>
+
+        <!-- Botão Enviar -->
+        <button type="submit" class="modal-submit-btn"
+          [disabled]="whatsappForm.invalid || isSubmittingWhatsapp() || submitWhatsappSuccess()">
+          @if (isSubmittingWhatsapp()) {
+          <span class="spinner light"></span>
+          <span>Iniciando conversa...</span>
+          } @else if (submitWhatsappSuccess()) {
+          <span class="material-symbols-outlined success-icon">check_circle</span>
+          <span>Redirecionando para o WhatsApp...</span>
+          } @else {
+          <span>Enviar e conversar</span>
+          @if (whatsappForm.invalid) {
+          <span class="material-symbols-outlined">lock</span>
+          } @else {
+          <span class="material-symbols-outlined">chat</span>
+          }
+          }
+        </button>
+      </form>
+    </div>
+  </div>
+  }
+
+</div>

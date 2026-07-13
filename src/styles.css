@@ -1,1 +1,163 @@
-/* You can add global styles to this file, and also import other style files */
+/* =========================================================
+   Design Tokens – Paleta Azul Petróleo
+   ========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@700;800;900&display=swap');
+
+:root {
+  /* Cores principais */
+  --color-primary:       #005073;   /* Azul petróleo */
+  --color-primary-dark:  #003A54;   /* Azul petróleo escuro */
+  --color-primary-mid:   #2E6680;   /* Azul médio */
+  --color-accent:        #9DCFDF;   /* Azul claro */
+  --color-accent-mid:    #5B8D96;   /* Azul-cinza */
+  --color-muted:         #B8C8CC;   /* Cinza claro */
+
+  /* Degradês */
+  --gradient-hero:       linear-gradient(145deg, #003A54 0%, #005073 50%, #2E6680 100%);
+  --gradient-section:    linear-gradient(135deg, #005073 0%, #2E6680 100%);
+  --gradient-card:       linear-gradient(145deg, rgba(0,80,115,0.6) 0%, rgba(46,102,128,0.4) 100%);
+  --gradient-cta:        linear-gradient(135deg, #9DCFDF 0%, #5B8D96 100%);
+
+  /* Texto */
+  --text-main:  #FFFFFF;
+  --text-sub:   #B8C8CC;
+  --text-dark:  #003A54;
+
+  /* Superfícies */
+  --surface-card:   rgba(0, 58, 84, 0.55);
+  --border-color:   rgba(157, 207, 223, 0.15);
+  --border-hover:   rgba(157, 207, 223, 0.45);
+
+  /* Tipografia */
+  --font-title: 'Outfit', sans-serif;
+  --font-body:  'Inter', sans-serif;
+
+  /* Misc */
+  --radius-sm:  8px;
+  --radius-md:  16px;
+  --radius-lg:  24px;
+  --radius-xl:  32px;
+}
+
+/* =========================================================
+   Reset & Base
+   ========================================================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-primary-dark);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-title);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+/* =========================================================
+   Glassmorphism Card
+   ========================================================= */
+.glass-card {
+  background: var(--surface-card);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.glass-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* =========================================================
+   Text Gradient
+   ========================================================= */
+.text-gradient {
+  background: var(--gradient-cta);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* =========================================================
+   CTA Button
+   ========================================================= */
+.glow-btn {
+  background: var(--gradient-cta);
+  color: var(--color-primary-dark);
+  border: none;
+  padding: 14px 28px;
+  border-radius: 50px;
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2), 0 6px 20px rgba(157, 207, 223, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+
+.glow-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2), 0 12px 28px rgba(157, 207, 223, 0.35);
+}
+
+.glow-btn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+.glow-btn:disabled {
+  background: var(--color-accent-mid);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* =========================================================
+   Animations – Only subtle, no excess
+   ========================================================= */
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* =========================================================
+   Custom Scrollbar
+   ========================================================= */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-primary-dark); }
+::-webkit-scrollbar-thumb { background: var(--color-accent-mid); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
