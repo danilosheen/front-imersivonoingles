@@ -122,6 +122,345 @@
 }
 
 /* =========================================================
+   SEÇÃO PRINCIPAL – VÍDEO EM DESTAQUE (Hero Principal)
+   ========================================================= */
+.video-hero-section {
+  background: linear-gradient(135deg, #003a54 0%, #00546e 50%, #0c435c 100%);
+  color: #ffffff;
+  padding: 60px 24px 72px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.video-hero-header,
+.video-hero-headline {
+  max-width: 800px;
+  margin: 0 auto 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-catch-phrase {
+  font-family: var(--font-title);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.3;
+  margin-top: 4px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.video-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 0.8rem;
+  color: #9dcddc;
+  background: rgba(157, 205, 220, 0.12);
+  border: 1px solid rgba(157, 205, 220, 0.3);
+  padding: 6px 16px;
+  border-radius: 50px;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 15px rgba(157, 205, 220, 0.2);
+}
+
+.badge-icon {
+  font-size: 1.1rem;
+  color: #9dcddc;
+}
+
+.video-hero-title {
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.2;
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+}
+
+.video-hero-subtitle {
+  font-size: 1.15rem;
+  color: #d1e6ec;
+  line-height: 1.6;
+  max-width: 680px;
+}
+
+/* Moldura de Vídeo Premium com Efeito Pulsante */
+.video-frame-container {
+  max-width: 860px;
+  margin: 0 auto;
+  position: relative;
+  border-radius: 20px;
+}
+
+.video-frame-glow {
+  position: absolute;
+  top: -15px;
+  left: -15px;
+  right: -15px;
+  bottom: -15px;
+  background: linear-gradient(45deg, #00546e, #9dcddc, #003a54, #9dcddc);
+  background-size: 400% 400%;
+  border-radius: 28px;
+  z-index: 1;
+  opacity: 0.8;
+  filter: blur(12px);
+  animation: videoGlowPulse 6s ease infinite;
+}
+
+@keyframes videoGlowPulse {
+  0% { background-position: 0% 50%; opacity: 0.7; }
+  50% { background-position: 100% 50%; opacity: 0.95; }
+  100% { background-position: 0% 50%; opacity: 0.7; }
+}
+
+.video-frame-border {
+  position: relative;
+  z-index: 2;
+  background: #002233;
+  padding: 8px;
+  border-radius: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Player de Vídeo Customizado */
+.custom-video-player {
+  position: relative;
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  background-color: #000000;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-video-player video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+  display: block;
+}
+
+/* Overlay Big Play Button */
+.video-overlay-play {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 34, 51, 0.45);
+  backdrop-filter: blur(2px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.3s ease;
+}
+
+.video-overlay-play:hover {
+  background: rgba(0, 34, 51, 0.3);
+}
+
+.big-play-btn {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00546e 0%, #9dcddc 100%);
+  border: 3px solid #ffffff;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 30px rgba(0, 84, 110, 0.8), 0 0 15px rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+}
+
+.video-overlay-play:hover .big-play-btn {
+  transform: scale(1.12);
+  box-shadow: 0 0 45px rgba(157, 205, 220, 0.9), 0 0 20px rgba(255, 255, 255, 0.8);
+}
+
+.play-icon {
+  font-size: 3.6rem !important;
+  margin-left: 4px;
+}
+
+.play-hint {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #ffffff;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+  letter-spacing: 0.5px;
+}
+
+/* Custom Controls Bar */
+.custom-video-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 30, 45, 0.95), rgba(0, 30, 45, 0));
+  padding: 24px 16px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 15;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.custom-video-controls.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.control-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 50%;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.control-btn .material-symbols-outlined {
+  font-size: 1.6rem;
+}
+
+.video-time {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #d1e6ec;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Progress Seek Bar */
+.progress-bar-wrapper {
+  position: relative;
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.video-seek-bar {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 5;
+  margin: 0;
+}
+
+.progress-filled {
+  height: 100%;
+  background: linear-gradient(90deg, #9dcddc, #ffffff);
+  border-radius: 4px;
+  pointer-events: none;
+  position: relative;
+  transition: width 0.1s linear;
+}
+
+.progress-filled::after {
+  content: '';
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+}
+
+/* Adaptabilidade Mobile */
+@media (max-width: 768px) {
+  .video-hero-section {
+    padding: 40px 16px 48px;
+  }
+
+  .video-hero-title {
+    font-size: 1.85rem;
+  }
+
+  .video-hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .video-frame-glow {
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    filter: blur(8px);
+  }
+
+  .video-frame-border {
+    padding: 5px;
+    border-radius: 14px;
+  }
+
+  .custom-video-player {
+    border-radius: 10px;
+  }
+
+  .big-play-btn {
+    width: 64px;
+    height: 64px;
+  }
+
+  .play-icon {
+    font-size: 2.8rem !important;
+  }
+
+  .play-hint {
+    font-size: 0.9rem;
+    padding: 0 16px;
+    text-align: center;
+  }
+
+  .custom-video-controls {
+    padding: 16px 10px 8px;
+    gap: 8px;
+  }
+
+  .video-time {
+    font-size: 0.75rem;
+  }
+}
+
+/* =========================================================
    SEÇÃO 1 – CAPTURA DE E-MAIL (Hero/Top)
    ========================================================= */
 .email-capture-section {
@@ -138,7 +477,7 @@
 
 .hero-grid {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
+  grid-template-columns: 1fr 1fr;
   gap: 60px;
   align-items: center;
 }
@@ -292,7 +631,7 @@
 .visual-wrapper {
   position: relative;
   width: 100%;
-  max-width: 440px;
+  max-width: 520px;
 }
 
 .glow-backdrop {
@@ -996,6 +1335,10 @@
 
   .hero-visual-col {
     order: -1;
+  }
+
+  .visual-wrapper {
+    max-width: 440px;
   }
 
   .hero-title {

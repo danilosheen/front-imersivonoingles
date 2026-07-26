@@ -20,6 +20,71 @@
   </header>
 
   <!-- ======================================================
+       SEÇÃO PRINCIPAL – VÍDEO EM DESTAQUE (Hero Principal)
+  ====================================================== -->
+  <section class="video-hero-section">
+    <div class="section-container">
+      <div class="video-hero-headline">
+        <span class="video-badge">
+          <span class="material-symbols-outlined badge-icon">play_circle</span>
+          VÍDEO EXCLUSIVO
+        </span>
+        <h2 class="hero-catch-phrase">Assista ao vídeo e descubra como destravar seu inglês!</h2>
+      </div>
+
+      <!-- Moldura de Vídeo Premium com Player Próprio e Otimizado -->
+      <div class="video-frame-container">
+        <div class="video-frame-glow"></div>
+        <div class="video-frame-border">
+          <div class="custom-video-player" (mouseenter)="isVideoHovered.set(true)"
+            (mouseleave)="isVideoHovered.set(false)">
+
+            <video #videoPlayer preload="metadata" playsinline poster="assets/teacher.jpg"
+              (timeupdate)="onVideoTimeUpdate(videoPlayer)" (ended)="isVideoPlaying.set(false)"
+              (click)="toggleVideoPlay(videoPlayer)">
+              <source src="assets/video_teacher.mp4" type="video/mp4">
+              Seu navegador não suporta a reprodução deste vídeo.
+            </video>
+
+            <!-- Big Overlay Play Button (Apenas quando pausado) -->
+            @if (!isVideoPlaying()) {
+            <div class="video-overlay-play" (click)="toggleVideoPlay(videoPlayer)">
+              <button class="big-play-btn" aria-label="Reproduzir Vídeo">
+                <span class="material-symbols-outlined play-icon">play_arrow</span>
+              </button>
+              <span class="play-hint">Clique para assistir com a professora Taissa</span>
+            </div>
+            }
+
+            <!-- Custom Video Controls Bar (Exibido no Hover ou quando Pausado) -->
+            <div class="custom-video-controls" [class.visible]="!isVideoPlaying() || isVideoHovered()">
+              <button class="control-btn" (click)="toggleVideoPlay(videoPlayer)" aria-label="Play/Pause">
+                <span class="material-symbols-outlined">
+                  {{ isVideoPlaying() ? 'pause' : 'play_arrow' }}
+                </span>
+              </button>
+
+              <span class="video-time">{{ formatTime(videoCurrentTime()) }} / {{ formatTime(videoDuration()) }}</span>
+
+              <div class="progress-bar-wrapper">
+                <input type="range" min="0" max="100" step="0.1" [value]="videoProgress()"
+                  (input)="onVideoSeek($event, videoPlayer)" class="video-seek-bar" aria-label="Progresso do vídeo">
+                <div class="progress-filled" [style.width.%]="videoProgress()"></div>
+              </div>
+
+              <button class="control-btn" (click)="toggleVideoMute(videoPlayer, $event)" aria-label="Mute/Unmute">
+                <span class="material-symbols-outlined">
+                  {{ isVideoMuted() ? 'volume_off' : 'volume_up' }}
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
        SEÇÃO 1 – CAPTURA DE E-MAIL
   ====================================================== -->
   <section class="email-capture-section">
@@ -126,9 +191,9 @@
               </button>
 
               @for (page of spreadsheetPages; track $index) {
-              <img [src]="page.image" [alt]="page.title" class="gallery-image"
+              <img [src]="loadedIndexes().includes($index) ? page.image : ''" [alt]="page.title" class="gallery-image"
                 [class.active]="activeSpreadsheetImageIndex() === $index" draggable="false"
-                (dragstart)="$event.preventDefault()">
+                (dragstart)="$event.preventDefault()" loading="lazy">
               }
 
               <button class="nav-arrow right" (click)="nextSpreadsheetImage(); $event.stopPropagation()"
@@ -158,7 +223,7 @@
         <!-- Lado Direito: Texto de Recursos -->
         <div class="spreadsheet-info-col">
           <div class="features-card">
-            <h3 class="features-title">Com esta planilha de estudos de inglês, você consegue:</h3>
+            <h3 class="features-title">Com a Planilha, você consegue:</h3>
             <ul class="features-list">
               <li>
                 <span class="check-icon">✓</span>
@@ -215,22 +280,26 @@
 
       <!-- Lado Direito: Textos de apresentação da professora -->
       <div class="teacher-info-col">
-        <span class="teacher-label">CONHEÇA A PROFESORA</span>
-        <h2 class="teacher-name">Olá! Eu sou a professora Taissa.</h2>
+        <span class="teacher-label">CONHEÇA A PROFESSORA</span>
+        <h2 class="teacher-name">Olá! Meu nome é Taissa e eu vou ser a sua nova professora de inglês.</h2>
         <div class="teacher-bio">
           <p>
-            Sou professora de inglês e poliglota, apaixonada por transformar o aprendizado do idioma em uma experiência
-            leve, prática e altamente eficiente para quem deseja aprender inglês rápido.
+            Sou apaixonada por ensinar e acredito que aprender inglês pode ser muito mais leve, prático e eficiente do
+            que a maioria das pessoas imagina. Minha missão é mostrar que você não precisa passar anos estudando para
+            finalmente conseguir se comunicar com confiança.
           </p>
           <p>
-            Depois de anos ensinando alunos com diferentes objetivos e dificuldades, desenvolvi o <strong>Método
-              Imersivo no Inglês</strong>, uma metodologia focada em resultados que une organização de estudos, prática
-            constante e contato real com o idioma para acelerar a evolução e tornar o seu curso de inglês
-            verdadeiramente transformador.
+            Ao longo da minha trajetória, ajudei alunos com diferentes objetivos e desenvolvi um método baseado em
+            imersão, prática constante e acompanhamento personalizado, para que o inglês faça parte da sua rotina e os
+            resultados apareçam de forma natural.
           </p>
           <p>
-            Acredito que estudar inglês vai muito além de decorar regras gramaticais chatas. Meu objetivo é ajudar você
-            a ganhar confiança para compreender, falar e viver o inglês de forma natural no seu dia a dia.
+            Mais do que ensinar gramática, quero ajudar você a compreender, falar e pensar em inglês com segurança.
+            Estarei ao seu lado em cada etapa da sua evolução, tornando o aprendizado mais simples, organizado e
+            motivador.
+          </p>
+          <p>
+            Seja muito bem-vindo(a)! Será um prazer fazer parte da sua jornada rumo à fluência.
           </p>
         </div>
         <button (click)="openContactModal($event)" class="teacher-btn-cta">
@@ -250,6 +319,30 @@
       </p>
 
       <div class="faq-accordion">
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>Como funciona o curso de inglês com aulas individuais?</span>
+            <span class="material-symbols-outlined faq-arrow">expand_more</span>
+          </summary>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              <p>As aulas são 100% individuais e personalizadas, planejadas de acordo com o seu nível de inglês, seus
+                objetivos e sua rotina. Isso significa que cada aula é preparada exclusivamente para você, permitindo
+                uma evolução mais rápida e eficiente.</p>
+              <br>
+              <p>Durante as aulas, trabalhamos todas as habilidades essenciais do idioma: conversação, compreensão,
+                pronúncia, vocabulário, gramática e escuta, sempre com foco na comunicação real.</p>
+              <br>
+              <p>Além dos encontros ao vivo, você recebe um plano de estudos personalizado, atividades para praticar
+                entre as aulas, materiais exclusivos e acompanhamento contínuo para manter a constância e acelerar os
+                seus resultados.</p>
+              <br>
+              <p>As aulas são online, ao vivo, o que permite que você estude de onde estiver, com flexibilidade e
+                conforto.</p>
+            </div>
+          </div>
+        </details>
+
         <details class="faq-item">
           <summary class="faq-question">
             <span>A planilha para aprender inglês é realmente gratuita?</span>
@@ -272,19 +365,6 @@
             <div class="faq-answer-inner">
               <p>Sim. Você pode acessar sua planilha tanto no celular quanto no computador para estudar inglês em
                 qualquer lugar.</p>
-            </div>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary class="faq-question">
-            <span>Como funciona o curso de inglês com aulas individuais?</span>
-            <span class="material-symbols-outlined faq-arrow">expand_more</span>
-          </summary>
-          <div class="faq-answer">
-            <div class="faq-answer-inner">
-              <p>Sim. As aulas de inglês particulares são 100% personalizadas de acordo com seus objetivos de carreira
-                ou viagem, seu nível atual e sua disponibilidade de horários.</p>
             </div>
           </div>
         </details>

@@ -16,7 +16,16 @@ export class LeadCapture implements OnInit, OnDestroy {
   // Modal and Interactive states
   protected readonly isContactModalOpen = signal(false);
   protected readonly activeSpreadsheetImageIndex = signal(0);
+  protected readonly loadedIndexes = signal<number[]>([0]);
   protected readonly showProgressBar = signal(true);
+
+  // Custom Video Player States
+  protected readonly isVideoPlaying = signal(false);
+  protected readonly isVideoMuted = signal(false);
+  protected readonly videoProgress = signal(0);
+  protected readonly videoDuration = signal(0);
+  protected readonly videoCurrentTime = signal(0);
+  protected readonly isVideoHovered = signal(false);
 
   // Autoplay properties
   private autoplayInterval: any;
@@ -102,7 +111,45 @@ export class LeadCapture implements OnInit, OnDestroy {
     }, 50);
   }
 
-  openContactModal(event?: Event) {
+  // Video player methods
+  protected toggleVideoPlay(video: HTMLVideoElement) {
+    if (video.paused) {
+      video.play().then(() => this.isVideoPlaying.set(true)).catch(() => {});
+    } else {
+      video.pause();
+      this.isVideoPlaying.set(false);
+    }
+  }
+
+  protected toggleVideoMute(video: HTMLVideoElement, event?: Event) {
+    if (event) event.stopPropagation();
+    video.muted = !video.muted;
+    this.isVideoMuted.set(video.muted);
+  }
+
+  protected onVideoTimeUpdate(video: HTMLVideoElement) {
+    if (video.duration) {
+      this.videoDuration.set(video.duration);
+      this.videoCurrentTime.set(video.currentTime);
+      this.videoProgress.set((video.currentTime / video.duration) * 100);
+    }
+  }
+
+  protected onVideoSeek(event: Event, video: HTMLVideoElement) {
+    const input = event.target as HTMLInputElement;
+    const seekTime = (parseFloat(input.value) / 100) * video.duration;
+    video.currentTime = seekTime;
+    this.videoProgress.set(parseFloat(input.value));
+  }
+
+  protected formatTime(seconds: number): string {
+    if (isNaN(seconds) || seconds === 0) return '00:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  protected openContactModal(event?: Event) {
     if (event) {
       event.preventDefault();
     }
@@ -116,6 +163,7 @@ export class LeadCapture implements OnInit, OnDestroy {
 
   setSpreadsheetImage(index: number) {
     this.activeSpreadsheetImageIndex.set(index);
+    this.markImageAsLoaded(index);
     this.resetAutoplay();
   }
 
@@ -123,6 +171,7 @@ export class LeadCapture implements OnInit, OnDestroy {
     const currentIndex = this.activeSpreadsheetImageIndex();
     const nextIndex = (currentIndex + 1) % this.spreadsheetPages.length;
     this.activeSpreadsheetImageIndex.set(nextIndex);
+    this.markImageAsLoaded(nextIndex);
     if (!isAuto) {
       this.resetAutoplay();
     } else {
@@ -137,7 +186,14 @@ export class LeadCapture implements OnInit, OnDestroy {
     const currentIndex = this.activeSpreadsheetImageIndex();
     const prevIndex = (currentIndex - 1 + this.spreadsheetPages.length) % this.spreadsheetPages.length;
     this.activeSpreadsheetImageIndex.set(prevIndex);
+    this.markImageAsLoaded(prevIndex);
     this.resetAutoplay();
+  }
+
+  private markImageAsLoaded(index: number) {
+    if (!this.loadedIndexes().includes(index)) {
+      this.loadedIndexes.update(val => [...val, index]);
+    }
   }
 
   // Mouse & Touch Drag Gestures for gallery swiping
